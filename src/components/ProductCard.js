@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import StarRating from './StarRating';
+import ProductDetailCard from './ProductDetailCard'; // Import the new component
 
 const ProductCard = ({ product }) => {
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const [showDetailCard, setShowDetailCard] = useState(false); // State to control the detailed card
 
   const toggleDescription = () => {
     setShowFullDescription(!showFullDescription);
+  };
+
+  const toggleDetailCard = () => {
+    setShowDetailCard(!showDetailCard);
   };
 
   const descriptionClass = showFullDescription
@@ -13,9 +19,12 @@ const ProductCard = ({ product }) => {
     : 'mb-2 text-base dark:text-gray-300 text-gray-700 line-clamp-3';
 
   return (
-    <div className="w-full lg:w-1/4 p-4">
-      <div className="rounded-lg shadow-md bg-white">
-        <div className="bg-white rounded-lg p-6 transform hover:translate-y-2 hover:shadow-xl transition duration-300">
+    <div className={`w-full lg:w-1/4 p-4 relative flex justify-center`}>
+      <div className={`w-full rounded-lg shadow-md bg-white flex flex-col justify-between ${showDetailCard ? 'border border-black' : ''}`}>
+        <div
+          className={`bg-white rounded-lg p-6 transform cursor-pointer ${showDetailCard ? 'bg-black text-white' : ''}`}
+          onClick={toggleDetailCard} 
+        >
           <div className="relative">
             <div className="absolute top-0 right-0 bg-indigo-500 text-white py-1 px-2 rounded-tr-lg">
               {product.category}
@@ -23,19 +32,9 @@ const ProductCard = ({ product }) => {
           </div>
           <img className="h-64 w-full object-cover object-center" src={product.image} alt="Product Image" />
           <div className="p-4">
-            <h2 className="mb-2 text-lg font-medium dark:text-white text-gray-900">{product.title}</h2>
-            <p className={descriptionClass}>
-              {product.description}
-            </p>
-            {product.description.length > 200 && (
-              <button
-                onClick={toggleDescription}
-                className="text-indigo-500 cursor-pointer"
-                style={{ fontWeight: 'normal' }} // Prevents the "Read More" text from becoming bold
-              >
-                {showFullDescription ? 'Read Less' : 'Read More'}
-              </button>
-            )}
+            <h2 className={`mb-2 text-lg font-medium text-gray-900 ${showDetailCard ? 'text-white' : ''}`}>
+              {product.title}
+            </h2>
             <div className="flex items-center space-x-2 my-2 text-lg font-medium">
               <StarRating rating={product.rating.rate} />
               <p>{product.rating.count} reviews</p>
@@ -50,6 +49,9 @@ const ProductCard = ({ product }) => {
           </div>
         </div>
       </div>
+      {showDetailCard && (
+        <ProductDetailCard product={product} onClose={toggleDetailCard} />
+      )}
     </div>
   );
 };
